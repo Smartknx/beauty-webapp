@@ -6,12 +6,58 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-  <h1>Мини-приложение работает 🎉</h1>
+  <h2>📅 Запись в салон красоты</h2>
+
+  <div style="margin-bottom:12px;">
+    <label>Услуга:</label><br>
+    <select id="service">
+      <option value="Маникюр">Маникюр</option>
+      <option value="Педикюр">Педикюр</option>
+      <option value="Стрижка">Стрижка</option>
+      <option value="Окрашивание">Окрашивание</option>
+    </select>
+  </div>
+
+  <div style="margin-bottom:12px;">
+    <label>Имя:</label><br>
+    <input id="name" placeholder="Ваше имя">
+  </div>
+
+  <div style="margin-bottom:12px;">
+    <label>Телефон:</label><br>
+    <input id="phone" placeholder="+7..." type="tel">
+  </div>
+
+  <button id="send">✅ Подтвердить запись</button>
 
   <script>
     const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
+
+    // Подставим имя из Telegram, если есть
+    const user = tg.initDataUnsafe?.user;
+    if (user?.first_name) {
+      document.getElementById("name").value = user.first_name;
+    }
+
+    document.getElementById("send").onclick = () => {
+      const data = {
+        action: "create_booking",
+        service: document.getElementById("service").value,
+        name: document.getElementById("name").value.trim(),
+        phone: document.getElementById("phone").value.trim(),
+        initData: tg.initData
+      };
+
+      if (!data.name || !data.phone) {
+        alert("Заполните имя и телефон");
+        return;
+      }
+
+      tg.sendData(JSON.stringify(data));
+    };
   </script>
 </body>
+
 </html>
