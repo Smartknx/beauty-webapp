@@ -1,71 +1,109 @@
 <!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="UTF-8">
   <title>Beauty WebApp</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Telegram WebApp API -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
   <style>
-    body { font-family: Arial, sans-serif; padding: 16px; }
-    input, select, button { width: 100%; padding: 12px; margin-top: 8px; font-size: 16px; }
-    .box { border: 1px solid #eee; border-radius: 12px; padding: 12px; margin-top: 12px; }
+    body {
+      font-family: Arial, sans-serif;
+      padding: 16px;
+      background: #f7f7f7;
+    }
+    h2 {
+      text-align: center;
+    }
+    .box {
+      background: #fff;
+      padding: 16px;
+      border-radius: 12px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      font-size: 16px;
+    }
+    button {
+      background: #0088cc;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    #status {
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
   </style>
 </head>
 
 <body>
-  <h2>📅 Запись в салон</h2>
 
-  <div class="box">
-    <div id="status">Проверка Telegram...</div>
+<h2>📅 Запись в салон</h2>
 
-    <label>Услуга</label>
-    <select id="service">
-      <option value="Маникюр">Маникюр</option>
-      <option value="Педикюр">Педикюр</option>
-      <option value="Стрижка">Стрижка</option>
-      <option value="Окрашивание">Окрашивание</option>
-    </select>
+<div class="box">
+  <div id="status">Проверка Telegram WebApp...</div>
 
-    <label>Имя</label>
-    <input id="name" placeholder="Ваше имя">
+  <label>Услуга</label>
+  <select id="service">
+    <option value="Маникюр">Маникюр</option>
+    <option value="Педикюр">Педикюр</option>
+    <option value="Стрижка">Стрижка</option>
+    <option value="Окрашивание">Окрашивание</option>
+  </select>
 
-    <label>Телефон</label>
-    <input id="phone" placeholder="+7..." type="tel">
+  <label>Имя</label>
+  <input id="name" placeholder="Ваше имя">
 
-    <button id="send">✅ Отправить заявку</button>
-  </div>
+  <label>Телефон</label>
+  <input id="phone" placeholder="+7..." type="tel">
 
-  <script>
-    const statusEl = document.getElementById("status");
+  <button id="send">✅ Отправить заявку</button>
+</div>
 
-    // Если открыли не как WebApp (не через кнопку у бота) — Telegram.WebApp может быть недоступен
-    if (!window.Telegram || !window.Telegram.WebApp) {
-      statusEl.innerText = "❌ Открыто не как Mini App. Открой через кнопку бота /start.";
-    } else {
-      const tg = window.Telegram.WebApp;
-      tg.ready();
-      tg.expand();
-      statusEl.innerText = "✅ WebApp подключён. Нажмите «Отправить заявку».";
+<script>
+  const statusEl = document.getElementById("status");
 
-      // Подставим имя из Telegram
-      const user = tg.initDataUnsafe?.user;
-      if (user?.first_name) document.getElementById("name").value = user.first_name;
+  // Проверяем, что страница открыта как Mini App
+  if (!window.Telegram || !window.Telegram.WebApp) {
+    statusEl.innerText = "❌ Открыто не как Mini App. Открой через кнопку бота.";
+  } else {
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
 
-      document.getElementById("send").onclick = () => {
-        const payload = {
-          service: document.getElementById("service").value,
-          name: document.getElementById("name").value.trim(),
-          phone: document.getElementById("phone").value.trim()
-        };
+    statusEl.innerText = "✅ Mini App подключён. Заполни форму и отправь заявку.";
 
-        if (!payload.name || !payload.phone) {
-          alert("Заполните имя и телефон");
-          return;
-        }
-
-        tg.sendData(JSON.stringify(payload)); // <-- ВОТ ЭТО отправляет в бота
-      };
+    // Подставляем имя из Telegram, если есть
+    const user = tg.initDataUnsafe?.user;
+    if (user?.first_name) {
+      document.getElementById("name").value = user.first_name;
     }
-  </script>
+
+    document.getElementById("send").onclick = () => {
+      const payload = {
+        service: document.getElementById("service").value,
+        name: document.getElementById("name").value.trim(),
+        phone: document.getElementById("phone").value.trim(),
+        time: new Date().toISOString()
+      };
+
+      if (!payload.name || !payload.phone) {
+        alert("Заполните имя и телефон");
+        return;
+      }
+
+      // 🔥 СЮДА уходит сообщение в Telegram-бота
+      tg.sendData(JSON.stringify(payload));
+    };
+  }
+</script>
+
 </body>
 </html>
