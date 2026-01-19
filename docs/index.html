@@ -1,54 +1,24 @@
 <!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Beauty WebApp</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <!-- Telegram WebApp API -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 16px;
-      background: #f7f7f7;
-    }
-    h2 {
-      text-align: center;
-    }
-    .box {
-      background: #fff;
-      padding: 16px;
-      border-radius: 12px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    input, select, button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 10px;
-      font-size: 16px;
-    }
-    button {
-      background: #0088cc;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    #status {
-      margin-bottom: 10px;
-      font-weight: bold;
-    }
+    body { font-family: Arial, sans-serif; padding: 16px; background:#f7f7f7; }
+    .box { background:#fff; padding:16px; border-radius:12px; }
+    input, select, button { width:100%; padding:12px; margin-top:10px; font-size:16px; }
+    button { cursor:pointer; }
+    #status { font-weight:700; margin-bottom:10px; }
   </style>
 </head>
-
 <body>
 
 <h2>📅 Запись в салон</h2>
 
 <div class="box">
-  <div id="status">Проверка Telegram WebApp...</div>
+  <div id="status">Загрузка…</div>
 
   <label>Услуга</label>
   <select id="service">
@@ -59,50 +29,44 @@
   </select>
 
   <label>Имя</label>
-  <input id="name" placeholder="Ваше имя">
+  <input id="name" placeholder="Ваше имя" />
 
   <label>Телефон</label>
-  <input id="phone" placeholder="+7..." type="tel">
+  <input id="phone" placeholder="+7..." type="tel" />
 
   <button id="send">✅ Отправить заявку</button>
 </div>
 
+<!-- ✅ Скрипт в самом низу body -->
 <script>
   const statusEl = document.getElementById("status");
+  const sendBtn = document.getElementById("send");
 
-  // Проверяем, что страница открыта как Mini App
-  if (!window.Telegram || !window.Telegram.WebApp) {
-    statusEl.innerText = "❌ Открыто не как Mini App. Открой через кнопку бота.";
+  // Покажем, что кнопка найдена
+  if (!sendBtn) {
+    statusEl.textContent = "❌ Ошибка: кнопка не найдена (id='send').";
+  }
+
+  // Проверяем Telegram WebApp
+  const tg = window.Telegram?.WebApp;
+  if (!tg) {
+    statusEl.textContent = "❌ Открыто не как Mini App. Открой через кнопку бота /start.";
   } else {
-    const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
+    statusEl.textContent = "✅ Mini App подключён. Нажми «Отправить заявку».";
 
-    statusEl.innerText = "✅ Mini App подключён. Заполни форму и отправь заявку.";
-
-    // Подставляем имя из Telegram, если есть
+    // Имя из Telegram
     const user = tg.initDataUnsafe?.user;
-    if (user?.first_name) {
-      document.getElementById("name").value = user.first_name;
-    }
+    if (user?.first_name) document.getElementById("name").value = user.first_name;
 
-    document.getElementById("send").onclick = () => {
-  alert("Нажал кнопку. Отправляю тест...");
-  tg.sendData(JSON.stringify({ test: "ok", t: Date.now() }));
-};
-    
-
-      if (!payload.name || !payload.phone) {
-        alert("Заполните имя и телефон");
-        return;
-      }
-
-      // 🔥 СЮДА уходит сообщение в Telegram-бота
-      tg.sendData(JSON.stringify(payload));
-    };
+    // ТЕСТ: при клике сначала alert, чтобы понять, срабатывает ли кнопка
+    sendBtn.addEventListener("click", () => {
+      alert("Кнопка нажата. Отправляю тест…");
+      tg.sendData(JSON.stringify({ test: "ok", t: Date.now() }));
+    });
   }
 </script>
 
 </body>
 </html>
-
