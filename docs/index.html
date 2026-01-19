@@ -87,12 +87,10 @@
     }
 
     document.getElementById("send").onclick = () => {
-      const payload = {
-        service: document.getElementById("service").value,
-        name: document.getElementById("name").value.trim(),
-        phone: document.getElementById("phone").value.trim(),
-        time: new Date().toISOString()
-      };
+  alert("Нажал кнопку. Отправляю тест...");
+  tg.sendData(JSON.stringify({ test: "ok", t: Date.now() }));
+};
+    
 
       if (!payload.name || !payload.phone) {
         alert("Заполните имя и телефон");
@@ -107,3 +105,4 @@
 
 </body>
 </html>
+
