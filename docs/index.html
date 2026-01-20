@@ -24,32 +24,39 @@
       logEl.textContent += "\n" + x;
     }
 
-    logEl.textContent = "window.Telegram: " + (!!window.Telegram) +
-                        "\nTelegram.WebApp: " + (!!window.Telegram?.WebApp);
+    logEl.textContent =
+      "window.Telegram: " + (!!window.Telegram) +
+      "\nTelegram.WebApp: " + (!!window.Telegram?.WebApp);
 
     const tg = window.Telegram?.WebApp;
+
     if (!tg) {
       log("\n❌ Нет Telegram.WebApp. Открой через кнопку бота /start.");
       btn.disabled = true;
     } else {
       tg.ready();
       tg.expand();
+
       log("\n✅ tg.version=" + tg.version);
+      log("✅ platform=" + tg.platform);
       log("✅ initData длина=" + (tg.initData ? tg.initData.length : 0));
-      log("✅ initDataUnsafe.user=" + JSON.stringify(tg.initDataUnsafe?.user || null));
+      log("✅ user=" + JSON.stringify(tg.initDataUnsafe?.user || null));
 
       btn.onclick = () => {
-  log("\nCLICK! Отправляю...");
-  try {
-    tg.sendData(JSON.stringify({ test: "ok", t: Date.now() }));
-    log("sendData() вызван ✅");
-    tg.close(); // ← важно: закрывает WebApp, и Telegram точно отправляет данные в чат
-  } catch (e) {
-    log("❌ sendData error: " + e);
-  }
-};
+        log("\nCLICK!");
+        try {
+          tg.showAlert("Нажали кнопку. Сейчас отправлю данные...");
+          const payload = { test: "ok", t: Date.now() };
+
+          tg.sendData(JSON.stringify(payload));
+          log("sendData() вызван ✅ " + JSON.stringify(payload));
+
+          tg.close();
+        } catch (e) {
+          log("❌ ERROR: " + (e?.message || e));
+        }
+      };
     }
   </script>
 </body>
 </html>
-
