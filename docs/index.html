@@ -39,15 +39,17 @@
       log("✅ initDataUnsafe.user=" + JSON.stringify(tg.initDataUnsafe?.user || null));
 
       btn.onclick = () => {
-        log("\nCLICK! Отправляю...");
-        try {
-          tg.sendData(JSON.stringify({ test: "ok", t: Date.now() }));
-          log("sendData() вызван");
-        } catch (e) {
-          log("❌ sendData error: " + e);
-        }
-      };
+  log("\nCLICK! Отправляю...");
+  try {
+    tg.sendData(JSON.stringify({ test: "ok", t: Date.now() }));
+    log("sendData() вызван ✅");
+    tg.close(); // ← важно: закрывает WebApp, и Telegram точно отправляет данные в чат
+  } catch (e) {
+    log("❌ sendData error: " + e);
+  }
+};
     }
   </script>
 </body>
 </html>
+
