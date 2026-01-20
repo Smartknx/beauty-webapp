@@ -2,71 +2,36 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Beauty WebApp</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; padding: 16px; background:#f7f7f7; }
-    .box { background:#fff; padding:16px; border-radius:12px; }
-    input, select, button { width:100%; padding:12px; margin-top:10px; font-size:16px; }
-    button { cursor:pointer; }
-    #status { font-weight:700; margin-bottom:10px; }
+    body{font-family:Arial;padding:16px}
+    button{width:100%;padding:12px;font-size:16px;margin-top:12px}
+    #status{font-weight:700;margin-bottom:10px}
   </style>
 </head>
+
 <body>
-
-<h2>📅 Запись в салон</h2>
-
-<div class="box">
   <div id="status">Загрузка…</div>
+  <button id="send">✅ Отправить тест</button>
 
-  <label>Услуга</label>
-  <select id="service">
-    <option value="Маникюр">Маникюр</option>
-    <option value="Педикюр">Педикюр</option>
-    <option value="Стрижка">Стрижка</option>
-    <option value="Окрашивание">Окрашивание</option>
-  </select>
+  <script>
+    const statusEl = document.getElementById("status");
+    const tg = window.Telegram?.WebApp;
 
-  <label>Имя</label>
-  <input id="name" placeholder="Ваше имя" />
+    if (!tg) {
+      statusEl.textContent = "❌ Открыто не как Mini App. Открой через кнопку бота.";
+    } else {
+      tg.ready();
+      tg.expand();
+      statusEl.textContent = "✅ Mini App подключён. Нажми кнопку и отправь тест.";
 
-  <label>Телефон</label>
-  <input id="phone" placeholder="+7..." type="tel" />
-
-  <button id="send">✅ Отправить заявку</button>
-</div>
-
-<!-- ✅ Скрипт в самом низу body -->
-<script>
-  const statusEl = document.getElementById("status");
-  const sendBtn = document.getElementById("send");
-
-  // Покажем, что кнопка найдена
-  if (!sendBtn) {
-    statusEl.textContent = "❌ Ошибка: кнопка не найдена (id='send').";
-  }
-
-  // Проверяем Telegram WebApp
-  const tg = window.Telegram?.WebApp;
-  if (!tg) {
-    statusEl.textContent = "❌ Открыто не как Mini App. Открой через кнопку бота /start.";
-  } else {
-    tg.ready();
-    tg.expand();
-    statusEl.textContent = "✅ Mini App подключён. Нажми «Отправить заявку».";
-
-    // Имя из Telegram
-    const user = tg.initDataUnsafe?.user;
-    if (user?.first_name) document.getElementById("name").value = user.first_name;
-
-    // ТЕСТ: при клике сначала alert, чтобы понять, срабатывает ли кнопка
-    sendBtn.addEventListener("click", () => {
-      alert("Кнопка нажата. Отправляю тест…");
-      tg.sendData(JSON.stringify({ test: "ok", t: Date.now() }));
-    });
-  }
-</script>
-
+      document.getElementById("send").addEventListener("click", () => {
+        alert("Кнопка нажата. Отправляю тест...");
+        tg.sendData(JSON.stringify({ test: "ok", t: Date.now() }));
+      });
+    }
+  </script>
 </body>
 </html>
