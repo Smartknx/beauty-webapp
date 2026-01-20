@@ -1,35 +1,53 @@
 <!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Beauty WebApp Test</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Beauty WebApp Debug</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body{font-family:Arial;padding:16px}
+    button{width:100%;padding:12px;font-size:16px;margin-top:12px}
+    pre{background:#f2f2f2;padding:12px;white-space:pre-wrap;border-radius:10px}
+  </style>
 </head>
 <body>
+  <h3>Debug</h3>
+  <button id="btn">SEND TEST</button>
+  <pre id="log">loading...</pre>
 
-<h3 id="status">Загрузка...</h3>
-<button id="send">SEND TEST</button>
+  <script>
+    const logEl = document.getElementById("log");
+    const btn = document.getElementById("btn");
 
-<script>
-  const status = document.getElementById("status");
-  const btn = document.getElementById("send");
+    function log(x) {
+      logEl.textContent += "\n" + x;
+    }
 
-  const tg = window.Telegram?.WebApp;
-  if (!tg) {
-    status.innerText = "❌ Открыто не как Mini App";
-    btn.disabled = true;
-  } else {
-    tg.ready();
-    tg.expand();
-    status.innerText = "✅ Mini App подключён. Нажми SEND TEST";
+    logEl.textContent = "window.Telegram: " + (!!window.Telegram) +
+                        "\nTelegram.WebApp: " + (!!window.Telegram?.WebApp);
 
-    btn.onclick = () => {
-      alert("sending...");
-      tg.sendData(JSON.stringify({ test: "ok", time: Date.now() }));
-    };
-  }
-</script>
+    const tg = window.Telegram?.WebApp;
+    if (!tg) {
+      log("\n❌ Нет Telegram.WebApp. Открой через кнопку бота /start.");
+      btn.disabled = true;
+    } else {
+      tg.ready();
+      tg.expand();
+      log("\n✅ tg.version=" + tg.version);
+      log("✅ initData длина=" + (tg.initData ? tg.initData.length : 0));
+      log("✅ initDataUnsafe.user=" + JSON.stringify(tg.initDataUnsafe?.user || null));
 
+      btn.onclick = () => {
+        log("\nCLICK! Отправляю...");
+        try {
+          tg.sendData(JSON.stringify({ test: "ok", t: Date.now() }));
+          log("sendData() вызван");
+        } catch (e) {
+          log("❌ sendData error: " + e);
+        }
+      };
+    }
+  </script>
 </body>
 </html>
